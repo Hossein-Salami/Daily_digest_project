@@ -1,4 +1,4 @@
-import smtplib
+import smtplib, json
 from email.message import EmailMessage # for a simple text email
 from email.mime.text import MIMEText # for html formatted email
 import f_content
@@ -10,13 +10,12 @@ class DailyEmail():
                          'weather': f_content.retrive_forecast()
                         }
         self.recipient = [
-                            'xxx@xxx.com'
+                            'x@x.com'
                          ]
-        self.sender_credentials = {
-                                    'email': 'xxx@xxx.com',
-                                    'password': 'xxx'
-                                   }
         
+        with open('credentials', 'r') as f:
+            self.sender_credentials = json.load(f)
+
     def email_content_prep(self):
         """
         A method that prepares the daily email that to be sent. The method uses attribute
@@ -27,23 +26,23 @@ class DailyEmail():
 
         # HTML backbone for the email format
         email_html = f"""
-        <!DOCTYPE html>
-		
-        <html lang="en">
-		
+        <html>
         <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title> Good morning my friend :) </title>
+            <title> </title>
         </head>
 
         <body>
+
             <header>
-                <h1> Here is the weather forecast for the next 24 hr: </h1>
+                <h1> Good Morning My Friend! </h1>
+                <p> Here is all you need to know to start a great day! </p>
             </header>
-            <p>
-                {information_weather}
-            </p>
+
+            <section>
+                <h2> Weather forecast </h2>
+                <p> The weather forecast for the next 24 hours is {self.content['weather']} </p>
+            </section>
+
         </body>
 
         </html>
@@ -53,6 +52,7 @@ class DailyEmail():
 
     def send_email(self):
         email_html = self.email_content_prep()
+
         
         msg = MIMEText(email_html, 'html')
         msg["From"] = self.sender_credentials['email']
@@ -63,7 +63,7 @@ class DailyEmail():
         #msg = EmailMessage()
         #msg.set_content(email_html)
 
-        with smtplib.SMTP("smtp.mail.xxx.com", <port_number>) as server:
+        with smtplib.SMTP("smtp.mail.x.com", 587) as server:
             server.ehlo()
             server.starttls()
             server.login(self.sender_credentials['email'],
